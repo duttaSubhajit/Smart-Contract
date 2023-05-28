@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Blockchain Developer Smart Contract</title>
+    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script>
+    <script src="app.js"></script>
+</head>
+<body>
+    <h1>Blockchain Developer Smart Contract</h1>
+    <h3>Account: <span id="account"></span></h3>
+    <h3>Balance: <span id="balance"></span> ETH</h3>
+    <h3>Staked Balance: <span id="stakedBalance"></span> ETH</h3>
+    <h3>Staked Time: <span id="stakedTime"></span> seconds</h3>
+    <h3>Reward Balance: <span id="rewardBalance"></span> ETH</h3>
+    <h2>Actions</h2>
+    <button onclick="deposit()">Deposit</button>
+    <button onclick="withdraw()">Withdraw</button>
+    <button onclick="stake()">Stake</button>
+    <button onclick="unstake()">Unstake</button>
+    <button onclick="claimRewards()">Claim Rewards</button>
+
+    <script>
+        // Connect to the Ethereum network using Metamask or other provider
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+
+        // Contract address and ABI
+        const contractAddress = '0x5FbDB2315678afecb367f032d93F642f64180aa3';
+        const contractABI = [
+            // Contract ABI here
+            {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "balances",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "claimRewards",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "deposit",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        }
+      ],
+      "name": "distributeRewards",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getBalance",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getRewardBalance",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getStakedBalance",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getStakedTimestamp",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "rewards",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "stake",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "stakedBalances",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "stakedTimestamps",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "totalSupply",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "unstake",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "withdraw",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+        ];
+
+        // Instantiate the contract object
+        const contract = new ethers.Contract(contractAddress, contractABI, signer);
+
+        // Get user account address
+        async function getAccount() {
+            const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+            return accounts[0];
+        }
+
+        // Refresh account information
+        async function refreshAccountInfo() {
+            const account = await getAccount();
+            document.getElementById('account').textContent = account;
+
+            const balance = await provider.getBalance(account);
+            document.getElementById('balance').textContent = ethers.utils.formatEther(balance);
+
+            const stakedBalance = await contract.getStakedBalance();
+            document.getElementById('stakedBalance').textContent = ethers.utils.formatEther(stakedBalance);
+
+            const stakedTime = await contract.getStakedTimestamp();
+            document.getElementById('stakedTime').textContent = stakedTime;
+
+            const rewardBalance = await contract.getRewardBalance();
+            document.getElementById('rewardBalance').textContent = ethers.utils.formatEther(rewardBalance);
+        }
+
+        // Deposit funds
+        async function deposit() {
+            const amount = ethers.utils.parseEther(prompt('Enter the amount to deposit:'));
+            const tx = await contract.deposit({ value: amount });
+            await tx.wait();
+            await refreshAccountInfo();
+        }
+
+        // Withdraw funds
+        async function withdraw() {
+            const amount = ethers.utils.parseEther(prompt('Enter the amount to withdraw:'));
+            const tx = await contract.withdraw(amount);
+            await tx.wait();
+            await refreshAccountInfo();
+        }
+
+        // Stake tokens
+        async function stake() {
+            const amount = ethers.utils.parseEther(prompt('Enter the amount to stake:'));
+            const tx = await contract.stake(amount);
+            await tx.wait();
+            await refreshAccountInfo();
+        }
+
+        // Unstake tokens
+        async function unstake() {
+            const amount = ethers.utils.parseEther(prompt('Enter the amount to unstake:'));
+            const tx = await contract.unstake(amount);
+            await tx.wait();
+            await refreshAccountInfo();
+        }
+
+        // Claim rewards
+        async function claimRewards() {
+            const tx = await contract.claimRewards();
+            await tx.wait();
+            await refreshAccountInfo();
+        }
+
+        // Initial setup and refresh
+        async function init() {
+            await ethereum.request({ method: 'eth_requestAccounts' });
+            await refreshAccountInfo();
+        }
+
+        init();
+    </script>
+</body>
+</html>
